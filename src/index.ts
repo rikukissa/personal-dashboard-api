@@ -3,6 +3,7 @@ import * as express from "express";
 import * as multer from "multer";
 import { promisify } from "util";
 import { extname } from "path";
+import * as cors from "cors";
 
 const bodyParser = multer();
 const app = express();
@@ -23,6 +24,7 @@ const searchFacesByImage = promisify(
   rekognition.searchFacesByImage.bind(rekognition)
 );
 
+app.use(cors());
 app.use(bodyParser.single("file"));
 
 const UPLOAD_OPTIONS = { partSize: 10 * 1024 * 1024, queueSize: 1 };
