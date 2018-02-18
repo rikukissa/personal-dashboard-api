@@ -18,6 +18,7 @@ const s3 = new AWS.S3({
   secretAccessKey: process.env.SECRET_ACCESS_KEY
 });
 
+const deleteObject = promisify(s3.deleteObject.bind(s3));
 const upload = promisify(s3.upload.bind(s3));
 const indexFaces = promisify(rekognition.indexFaces.bind(rekognition));
 const searchFacesByImage = promisify(
@@ -82,6 +83,13 @@ app.post("/recognize", async (req, res) => {
       },
       MaxFaces: 5
     });
+    if (result.FaceMatches.length === 0) {
+      await deleteObject({
+        Key: filename,
+        Bucket: BUCKET_NAME
+      });
+    }
+
     res.status(200).send(result);
   } catch (err) {
     console.error(err);
