@@ -4,6 +4,7 @@ import * as multer from "multer";
 import { promisify } from "util";
 import { extname } from "path";
 import * as cors from "cors";
+import * as faceapp from "faceapp";
 
 const bodyParser = multer();
 const app = express();
@@ -91,6 +92,19 @@ app.post("/recognize", async (req, res) => {
     }
 
     res.status(200).send(result);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send(err.message);
+  }
+});
+
+app.post("/transform", async (req, res) => {
+  try {
+    const buffer = await faceapp.process(
+      req.file.buffer,
+      req.params.filter || "old"
+    );
+    res.status(200).send(buffer.toString("base64"));
   } catch (err) {
     console.error(err);
     res.status(500).send(err.message);
