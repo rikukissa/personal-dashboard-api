@@ -7,6 +7,7 @@ import { indexFace, recognize } from "./services/aws";
 import { transform } from "./services/faceapp";
 import { detect } from "./services/opencv";
 import { config } from "./config";
+import { getMissingHours } from "./services/missing-hours";
 
 const app = express();
 app.use(cors());
@@ -39,10 +40,24 @@ app.post("/recognize", bodyParser.single("file"), async (req, res) => {
 
 app.post("/transform", bodyParser.single("file"), async (req, res) => {
   try {
-    const buffer = await transform(req.params.filter || "old", req.file);
+    const buffer = await transform(req.query.filter || "old", req.file);
     res.status(200).send(buffer.toString("base64"));
   } catch (err) {
     console.error(err);
+    res.status(500).send(err.message);
+  }
+});
+
+app.get("/missing-hours/:userId", async (req, res) => {
+  try {
+    const missing = await getMissingHours(req.params.userId);
+    if (missing === null) {
+      res.status(404).end();
+      return;
+    }
+
+    res.status(200).send({ missing });
+  } catch (err) {
     res.status(500).send(err.message);
   }
 });
