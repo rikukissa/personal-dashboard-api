@@ -1,7 +1,7 @@
 import * as http from "http";
 import { promisify } from "util";
 import { extname } from "path";
-import * as cv from "opencv4nodejs";
+import * as cv from "opencv";
 import * as WS from "ws";
 import * as AWS from "aws-sdk";
 import * as express from "express";
@@ -113,7 +113,7 @@ app.post("/transform", bodyParser.single("file"), async (req, res) => {
   }
 });
 
-const classifier = new cv.CascadeClassifier(cv.HAAR_FRONTALFACE_ALT2);
+const readImage = promisify(cv.readImage.bind(cv));
 
 const server = http.createServer(app);
 const wss = new WS.Server({ server });
@@ -130,12 +130,16 @@ wss.on("connection", function connection(ws) {
       "base64"
     );
     try {
-      const frame = cv.imdecode(buffer);
-      const grayImg = await frame.bgrToGrayAsync();
-      const objects = classifier.detectMultiScaleGpu(grayImg, {
-        scaleFactor: 1.1,
-        minNeighbors: 10
-      });
+      const im = await readImage(buffer);
+      if (im.width() < 1 || im.height() < 1) {
+        console.log("empty");
+
+        throw new Error("Image has no size");
+      }
+
+      const detectObject = promisify(im.detectObject.bind(im));
+      const objects = await detectObject(cv.FACE_CASCADE, {});
+
       if (ws.OPEN) {
         ws.send(JSON.stringify({ objects, id }));
       }

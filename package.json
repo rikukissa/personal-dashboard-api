@@ -18,7 +18,7 @@
     "express": "^4.16.2",
     "faceapp": "^0.3.3",
     "multer": "^1.3.0",
-    "opencv4nodejs": "^3.0.3",
+    "opencv": "^6.0.0",
     "ts-node": "^4.1.0",
     "typescript": "^2.7.1",
     "utf-8-validate": "^4.0.0",
