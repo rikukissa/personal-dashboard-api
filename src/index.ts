@@ -6,6 +6,7 @@ import * as cors from "cors";
 import { indexFace, recognize } from "./services/aws";
 import { transform } from "./services/faceapp";
 import { detect } from "./services/opencv";
+import { config } from "./config";
 
 const app = express();
 app.use(cors());
@@ -76,6 +77,6 @@ wss.on("connection", function connection(ws) {
   });
 });
 
-server.listen(process.env.PORT || 3000, () =>
+server.listen(config.PORT || 3000, () =>
   console.log("Listening on %d", server.address().port)
 );

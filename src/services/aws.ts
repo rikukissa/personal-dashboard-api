@@ -1,16 +1,17 @@
 import { promisify } from "util";
 import { extname } from "path";
 import * as AWS from "aws-sdk";
+import { config } from "../config";
 
 const rekognition = new AWS.Rekognition({
   region: "eu-west-1",
-  accessKeyId: process.env.ACCESS_KEY_ID,
-  secretAccessKey: process.env.SECRET_ACCESS_KEY
+  accessKeyId: config.ACCESS_KEY_ID,
+  secretAccessKey: config.SECRET_ACCESS_KEY
 });
 
 const s3 = new AWS.S3({
-  accessKeyId: process.env.ACCESS_KEY_ID,
-  secretAccessKey: process.env.SECRET_ACCESS_KEY
+  accessKeyId: config.ACCESS_KEY_ID,
+  secretAccessKey: config.SECRET_ACCESS_KEY
 });
 
 const deleteObject = promisify(s3.deleteObject.bind(s3));
@@ -21,8 +22,8 @@ const searchFacesByImage = promisify(
 );
 
 const UPLOAD_OPTIONS = { partSize: 10 * 1024 * 1024, queueSize: 1 };
-const BUCKET_NAME = process.env.BUCKET_NAME || "";
-const COLLECTION_NAME = process.env.COLLECTION_NAME;
+const BUCKET_NAME = config.BUCKET_NAME || "";
+const COLLECTION_NAME = config.COLLECTION_NAME;
 
 async function uploadFile(file: Express.Multer.File) {
   const filename = `${Date.now()}${extname(file.originalname)}`;
