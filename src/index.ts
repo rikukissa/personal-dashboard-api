@@ -2,6 +2,7 @@ import * as http from "http";
 import * as WS from "ws";
 import * as express from "express";
 import * as multer from "multer";
+import { PNG } from "pngjs";
 import * as cors from "cors";
 import { indexFace, recognize } from "./services/aws";
 import { transform } from "./services/faceapp";
@@ -71,24 +72,31 @@ const wss = new WS.Server({ server });
 
 wss.on("connection", function connection(ws) {
   ws.on("error", () => {});
-  ws.on("message", async function incoming(message: string) {
-    const data = JSON.parse(message);
+  ws.on("message", function incoming(message: Buffer) {
+    const png = new PNG({
+      width: (message[0] << 8) | (message[1] & 0xff),
+      height: (message[2] << 8) | (message[3] & 0xff)
+    });
 
-    const { id, image } = data;
+    png.data = message.slice(4);
 
-    const buffer = Buffer.from(
-      image.replace("data:image/png;base64,", ""),
-      "base64"
-    );
-    try {
-      const objects = detect(buffer);
+    const buffers: Buffer[] = [];
+    const stream = png.pack();
 
-      if (ws.OPEN) {
-        ws.send(JSON.stringify({ objects, id }));
+    stream.on("data", (chunk: Buffer) => buffers.push(chunk));
+    stream.on("error", err => console.error(err));
+    stream.on("end", async () => {
+      try {
+        const buffer = Buffer.concat(buffers);
+        const objects = await detect(buffer);
+
+        if (ws.readyState !== ws.CLOSED) {
+          ws.send(JSON.stringify({ objects }));
+        }
+      } catch (err) {
+        console.log(err);
       }
-    } catch (err) {
-      console.log(err);
-    }
+    });
   });
 });
 
