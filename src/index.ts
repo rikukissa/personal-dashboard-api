@@ -34,6 +34,9 @@ app.post("/recognize", bodyParser.single("file"), async (req, res) => {
     const result = await recognize(req.file);
     res.status(200).send(result);
   } catch (err) {
+    if (err.message.indexOf("There are no faces in the image.")) {
+      return res.status(400).send(err.message);
+    }
     console.error(err);
     res.status(500).send(err.message);
   }
