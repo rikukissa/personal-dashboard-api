@@ -14,6 +14,8 @@ const app = express();
 app.use(cors());
 const bodyParser = multer();
 
+app.get("/", (_, res) => res.status(200).send("Hello"));
+
 app.post("/faces", bodyParser.single("file"), async (req, res) => {
   if (!req.body.id) {
     return res.status(400).send('Missing "id" field');
