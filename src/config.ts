@@ -1,9 +1,9 @@
-const config: { [key: string]: string | undefined } = {
+const config: { [key: string]: string | number | undefined } = {
   ACCESS_KEY_ID: process.env.ACCESS_KEY_ID,
   SECRET_ACCESS_KEY: process.env.SECRET_ACCESS_KEY,
   BUCKET_NAME: process.env.BUCKET_NAME,
   COLLECTION_NAME: process.env.COLLECTION_NAME,
-  PORT: process.env.PORT,
+  PORT: process.env.PORT || 3005,
   HOURS_CSV_URL: process.env.HOURS_CSV_URL,
   HOURS_CSV_USERNAME: process.env.HOURS_CSV_USERNAME,
   HOURS_CSV_PASSWORD: process.env.HOURS_CSV_PASSWORD
