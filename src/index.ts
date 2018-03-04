@@ -9,7 +9,7 @@ import { transform } from "./services/faceapp";
 import { detect } from "./services/opencv";
 import { config } from "./config";
 import { getMissingHours } from "./services/missing-hours";
-import { getPeople } from "./services/people";
+import { getLikelySuspects, People } from "./services/people";
 
 const app = express();
 app.use(cors());
@@ -68,9 +68,8 @@ app.get("/missing-hours/:userId", async (req, res) => {
 });
 
 app.get("/people", async (req, res) => {
-  const people = getPeople();
-  console.log(people);
-  res.status(200).send(people);
+  const people: People = require('./services/peopleList.json');
+  res.status(200).send(getLikelySuspects({ people }));
 });
 
 /*

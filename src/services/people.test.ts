@@ -1,8 +1,8 @@
-import { filterPeople, People } from './people'
+import { getLikelySuspects, People } from './people'
 
 describe('should filter people list correctly', () => {
   it('should get londoners', () => {
-    expect(filterPeople(testPeople)).toEqual(
+    expect(getLikelySuspects({ people: testPeople })).toEqual(
       [
         "Rob Ace",
         "Hulda Helen",

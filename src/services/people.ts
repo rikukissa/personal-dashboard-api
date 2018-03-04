@@ -10,23 +10,34 @@ export interface Person {
   supervisorName: string 
   start: string 
   end?: string
-  active: string 
+  active: string
 }
 
 export type People = Person[]
 
-export function getPeople() {
-  const peopleList: Person[] = require('./peopleList.json');
-  return filterPeople(peopleList);
+export type PeopleProps = {
+  people: People;
+  filter?(people: People): string[];
 }
 
-export const filterPeople = (people: People) => {
-  return people
-    .filter(byTribe('London')) // Hardcoding ftw
-    .map(getFullName)
-    .slice(0, RETURNED_NAMES_AMOUNT);
+export const getLikelySuspects = (params: PeopleProps) => {
+  const { people, filter } = params;
+  return filter ? filter(people) : inLondon(people);
 }
 
-const getFullName = (p: Person) => `${p.first} ${p.last}`
+export const inLondon = 
+  (people: People) => 
+    getFullNames(getShortList(filterByTribe(people)("London")))
 
-const byTribe = (tribeName: string) => (p: Person) => p.team.includes(tribeName)
+export const getShortList = 
+  (people: People) => 
+    people.slice(0, RETURNED_NAMES_AMOUNT)
+
+export const getFullNames = 
+  (people: People) => 
+    people.map(p => `${p.first} ${p.last}`)
+
+export const filterByTribe = 
+  (people: People) => 
+  (tribeName: string) => 
+    people.filter(p => p.team.includes(tribeName))
