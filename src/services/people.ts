@@ -9,13 +9,19 @@ export interface Person {
   supervisor: string 
   supervisorName: string 
   start: string 
+  end?: string
   active: string 
 }
 
+export type People = Person[]
+
 export function getPeople() {
   const peopleList: Person[] = require('./peopleList.json');
+  return filterPeople(peopleList);
+}
 
-  return peopleList
+export const filterPeople = (people: People) => {
+  return people
     .filter(byTribe('London')) // Hardcoding ftw
     .map(getFullName)
     .slice(0, RETURNED_NAMES_AMOUNT);
