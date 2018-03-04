@@ -45,6 +45,10 @@ export const filterByTribe =
   (people: People) => 
     people.filter(p => p.team.includes(tribeName));
 
+export const removeDuplicates = 
+  (items: any[]) => 
+    items.filter((element, position, arr) => arr.indexOf(element) == position);
+
 export const filterBySimilarName = (people: People, name: string): People => {
   const syllableMap = getDumbMatchingMap(name);
   const peopleArray: People[] = [];
@@ -53,9 +57,8 @@ export const filterBySimilarName = (people: People, name: string): People => {
     const filteredPeople = people.filter(p => matchFunction(p.first));
     peopleArray.push(filteredPeople)
   })
-  
-  return _.flatten(peopleArray);
-  // TODO remove duplicates
+    
+  return removeDuplicates(_.flatten(peopleArray));
 }
 
 export const getDumbMatchingMap = (name: string): Map<string, Function> => {
