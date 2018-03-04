@@ -43,7 +43,6 @@ describe('should get matching names in a dumb, but expected way', () => {
       [ 
         'Ricardo Sanchez',
         'Riku Rouvila',
-        'Ricardo Sanchez', // "yes, this is totally expected"
         'Taco Head' 
       ]
     );
