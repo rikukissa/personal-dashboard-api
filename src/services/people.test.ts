@@ -1,13 +1,14 @@
 import {
+  filterBySimilarName,
   filterByTribe,
+  getFullNames,
   getLikelySuspects,
   getShortList,
   MAX_RETURNED_NAMES,
   People
-} from './people';
+  } from './people';
 
 describe('should filter people list correctly', () => {
-
   it('should return no more than maximum amount of people specified', () => {
     const peopleProps = { people: testPeople, filter: getShortList};
     expect(getLikelySuspects(peopleProps).length).toEqual(MAX_RETURNED_NAMES);
@@ -33,6 +34,20 @@ describe('should filter people list correctly', () => {
         "Ricardo Sanchez"
       ]
     )
+  })
+})
+
+describe('should get matching names in a dumb, but expected way', () => {
+  it('should get a match map for Rico', () => {
+    const namesSimilarToRico = filterBySimilarName(testPeople, 'Rico');
+    expect(getFullNames(namesSimilarToRico)).toEqual(
+      [ 
+        'Ricardo Sanchez',
+        'Riku Rouvila',
+        'Ricardo Sanchez', // "yes, this is totally expected"
+        'Taco Head' 
+      ]
+    );
   })
 })
 
