@@ -1,4 +1,4 @@
-const RETURNED_NAMES_AMOUNT = 6
+export const MAX_RETURNED_NAMES = 6
 
 export interface Person {
   username: string 
@@ -17,27 +17,28 @@ export type People = Person[]
 
 export type PeopleProps = {
   people: People;
-  filter?(people: People): string[];
+  filter?(people: People): People;
 }
 
 export const getLikelySuspects = (params: PeopleProps) => {
   const { people, filter } = params;
-  return filter ? filter(people) : inLondon(people);
+  const filteredPeople = filter ? filter(people) : inLondon(people);
+  return getFullNames(filteredPeople);
 }
 
 export const inLondon = 
   (people: People) => 
-    getFullNames(getShortList(filterByTribe(people)("London")))
-
-export const getShortList = 
-  (people: People) => 
-    people.slice(0, RETURNED_NAMES_AMOUNT)
+    getShortList(filterByTribe("London")(people))
 
 export const getFullNames = 
   (people: People) => 
     people.map(p => `${p.first} ${p.last}`)
 
-export const filterByTribe = 
+export const getShortList = 
   (people: People) => 
-  (tribeName: string) => 
+    people.slice(0, MAX_RETURNED_NAMES)
+
+export const filterByTribe = 
+(tribeName: string) => 
+  (people: People) => 
     people.filter(p => p.team.includes(tribeName))

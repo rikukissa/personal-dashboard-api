@@ -1,13 +1,36 @@
-import { getLikelySuspects, People } from './people'
+import {
+  filterByTribe,
+  getLikelySuspects,
+  getShortList,
+  MAX_RETURNED_NAMES,
+  People
+} from './people';
 
 describe('should filter people list correctly', () => {
-  it('should get londoners', () => {
-    expect(getLikelySuspects({ people: testPeople })).toEqual(
+
+  it('should return no more than maximum amount of people specified', () => {
+    const peopleProps = { people: testPeople, filter: getShortList};
+    expect(getLikelySuspects(peopleProps).length).toEqual(MAX_RETURNED_NAMES);
+  })
+
+  it('should get people whose tribe is London', () => {
+    const peopleProps = { people: testPeople, filter: filterByTribe('London') };
+    expect(getLikelySuspects(peopleProps)).toEqual(
       [
         "Rob Ace",
         "Hulda Helen",
         "Riku Rouvila",
         "Taco Head"
+      ]
+    )
+  })
+
+  it('should get people whose tribe is Tammerforce', () => {
+    const peopleProps = { people: testPeople, filter: filterByTribe('Tammerforce') };
+    expect(getLikelySuspects(peopleProps)).toEqual(
+      [
+        "Tiia Maunu",
+        "Ricardo Sanchez"
       ]
     )
   })
