@@ -22,22 +22,22 @@ export type PeopleProps = {
   filter?(people: People): People;
 }
 
-export const getLikelySuspects = (params: PeopleProps) => {
+export const getLikelySuspects = (name: string, params: PeopleProps): string[] => {
   const { people, filter } = params;
-  const filteredPeople = filter ? filter(people) : inLondon(people);
+  const filteredPeople = filter ? filter(people) : filterBySimilarName(inLondon(people), name);
   return getFullNames(filteredPeople);
 }
 
 export const inLondon = 
-  (people: People) => 
-    getShortList(filterByTribe("London")(people));
+  (people: People): People => 
+    filterByTribe("London")(people);
 
 export const getFullNames = 
-  (people: People) => 
+  (people: People): string[] => 
     people.map(p => `${p.first} ${p.last}`);
 
 export const getShortList = 
-  (people: People) => 
+  (people: People): People => 
     people.slice(0, MAX_RETURNED_NAMES);
 
 export const filterByTribe = 
@@ -45,7 +45,7 @@ export const filterByTribe =
   (people: People) => 
     people.filter(p => p.team.includes(tribeName));
 
-export const filterBySimilarName = (people: People, name: string) => {
+export const filterBySimilarName = (people: People, name: string): People => {
   const syllableMap = getDumbMatchingMap(name);
   const peopleArray: People[] = [];
 

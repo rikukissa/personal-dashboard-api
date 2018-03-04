@@ -2,36 +2,35 @@ import {
   filterBySimilarName,
   filterByTribe,
   getFullNames,
-  getLikelySuspects,
   getShortList,
+  inLondon,
   MAX_RETURNED_NAMES,
   People
   } from './people';
 
 describe('should filter people list correctly', () => {
-  it('should return no more than maximum amount of people specified', () => {
-    const peopleProps = { people: testPeople, filter: getShortList};
-    expect(getLikelySuspects(peopleProps).length).toEqual(MAX_RETURNED_NAMES);
+  it('should return no more than maximum amount of people specified when short list filter applied', () => {
+    expect(getShortList(testPeople).length).toEqual(MAX_RETURNED_NAMES);
   })
 
   it('should get people whose tribe is London', () => {
-    const peopleProps = { people: testPeople, filter: filterByTribe('London') };
-    expect(getLikelySuspects(peopleProps)).toEqual(
+    const peopleInLondon = filterByTribe('London')(testPeople);
+    expect(getFullNames(peopleInLondon)).toEqual(
       [
-        "Rob Ace",
-        "Hulda Helen",
-        "Riku Rouvila",
-        "Taco Head"
+        'Rob Ace',
+        'Hulda Helen',
+        'Riku Rouvila',
+        'Taco Head'
       ]
     )
   })
 
   it('should get people whose tribe is Tammerforce', () => {
-    const peopleProps = { people: testPeople, filter: filterByTribe('Tammerforce') };
-    expect(getLikelySuspects(peopleProps)).toEqual(
+    const peopleInTammerforce = filterByTribe('Tammerforce')(testPeople);
+    expect(getFullNames(peopleInTammerforce)).toEqual(
       [
-        "Tiia Maunu",
-        "Ricardo Sanchez"
+        'Tiia Maunu',
+        'Ricardo Sanchez'
       ]
     )
   })
@@ -48,6 +47,16 @@ describe('should get matching names in a dumb, but expected way', () => {
         'Taco Head' 
       ]
     );
+  })
+
+  it('should get suspects for Rico from London only', () => {
+    const ricosInLondon = filterBySimilarName(inLondon(testPeople), 'Rico')
+    expect(getFullNames(ricosInLondon)).toEqual(
+      [
+        'Riku Rouvila',
+        'Taco Head',
+      ]
+    )
   })
 })
 

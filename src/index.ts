@@ -67,9 +67,9 @@ app.get("/missing-hours/:userId", async (req, res) => {
   }
 });
 
-app.get("/people", async (req, res) => {
+app.get("/people/:name", async (req, res) => {
   const people: People = require('./services/peopleList.json');
-  res.status(200).send(getLikelySuspects({ people }));
+  res.status(200).send(getLikelySuspects(req.params.name, { people }));
 });
 
 /*
