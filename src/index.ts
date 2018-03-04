@@ -9,6 +9,7 @@ import { transform } from "./services/faceapp";
 import { detect } from "./services/opencv";
 import { config } from "./config";
 import { getMissingHours } from "./services/missing-hours";
+import { getPeople } from "./services/people";
 
 const app = express();
 app.use(cors());
@@ -64,6 +65,12 @@ app.get("/missing-hours/:userId", async (req, res) => {
   } catch (err) {
     res.status(500).send(err.message);
   }
+});
+
+app.get("/people", async (req, res) => {
+  const people = getPeople();
+  console.log(people);
+  res.status(200).send(people);
 });
 
 /*
