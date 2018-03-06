@@ -9,7 +9,7 @@ import { transform } from "./services/faceapp";
 import { detect } from "./services/opencv";
 import { config } from "./config";
 import { getMissingHours } from "./services/missing-hours";
-import { getLikelySuspects, getPeople } from "./services/people";
+import { getLikelySuspects, getPeople, getPerson } from "./services/people";
 
 const app = express();
 app.use(cors());
@@ -67,9 +67,21 @@ app.get("/missing-hours/:userId", async (req, res) => {
   }
 });
 
-app.get("/people/:name", async (req, res) => {
+app.get("/people", async (req, res) => {
+  if (!req.query.q) {
+    return res.status(400).send('Missing "q" query param');
+  }
   const people = await getPeople();
-  res.status(200).send(getLikelySuspects(req.params.name, { people }));
+  res.status(200).send(getLikelySuspects(req.query.q, { people }));
+});
+
+app.get("/people/:username", async (req, res) => {
+  const person = await getPerson(req.params.username);
+  if (!person) {
+    res.status(404).send("User not found");
+    return;
+  }
+  res.status(200).send(person);
 });
 
 /*

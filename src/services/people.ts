@@ -34,6 +34,10 @@ export async function getPeople(): Promise<People> {
   });
   return Object.keys(res.data.data).map(username => {
     const data = res.data.data[username][0];
+    const missingHours = res.data.data[username][1].reduce(
+      (memo: number, { capacity }: { capacity: number }) => memo + capacity,
+      0
+    );
     const [firstname, ...lastname] = data.name.split(" ");
     return {
       username,
@@ -45,9 +49,14 @@ export async function getPeople(): Promise<People> {
       supervisorName: "",
       start: "",
       end: "",
-      active: ""
+      active: "",
+      missingHours
     };
   });
+}
+
+export async function getPerson(username: string) {
+  return (await getPeople()).filter(person => username === person.username)[0];
 }
 
 export const getLikelySuspects = (
