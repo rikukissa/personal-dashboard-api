@@ -33,7 +33,8 @@ app.post("/faces", bodyParser.single("file"), async (req, res) => {
 app.post("/recognize", bodyParser.single("file"), async (req, res) => {
   try {
     const result = await recognize(req.file);
-    res.status(200).send(result);
+    const people = await Promise.all(result.map(getPerson));
+    res.status(200).send(people);
   } catch (err) {
     if (err.message.indexOf("There are no faces in the image.")) {
       return res.status(400).send(err.message);
