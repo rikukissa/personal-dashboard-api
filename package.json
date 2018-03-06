@@ -12,6 +12,7 @@
   "dependencies": {
     "@types/cors": "^2.8.3",
     "@types/pngjs": "^3.3.0",
+    "@types/ramda": "^0.25.19",
     "@types/ws": "^4.0.1",
     "aws-sdk": "^2.188.0",
     "axios": "^0.18.0",
