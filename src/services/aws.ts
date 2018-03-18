@@ -1,6 +1,7 @@
 import { promisify } from "util";
 import { extname } from "path";
 import * as AWS from "aws-sdk";
+import { uniq } from "ramda";
 import { config } from "../config";
 
 const rekognition = new AWS.Rekognition({
@@ -50,9 +51,9 @@ export async function indexFace(id: string, image: Express.Multer.File) {
     }
   });
 }
-export async function recognize(image: Express.Multer.File) {
+export async function recognize(image: Express.Multer.File): Promise<string[]> {
   const filename = await uploadFile(image);
-  const result = await searchFacesByImage({
+  const result = (await searchFacesByImage({
     CollectionId: COLLECTION_NAME,
     FaceMatchThreshold: 95,
     Image: {
@@ -62,11 +63,22 @@ export async function recognize(image: Express.Multer.File) {
       }
     },
     MaxFaces: 5
-  });
+  })) as AWS.Rekognition.SearchFacesByImageResponse;
 
   await deleteObject({
     Key: filename,
     Bucket: BUCKET_NAME
   });
-  return result;
+
+  if (!result.FaceMatches) {
+    return [];
+  }
+
+  const externalImageIds = result.FaceMatches.filter(
+    match =>
+      match.Face !== undefined && match.Face.ExternalImageId !== undefined
+  ).map(
+    match => (match.Face as AWS.Rekognition.Face).ExternalImageId as string
+  );
+  return uniq(externalImageIds);
 }
