@@ -1,13 +1,28 @@
+import { flatten } from "ramda";
 import {
-  filterBySimilarName,
-  prioritizeByTribe
+  getMatchFunctions,
+  inTribe,
+  prioritizeByTribe,
+  removeDuplicates
 } from "./people-filter";
 import { People } from "./people";
 
 const printNamesAndOffices = (people: People) =>
   people.map(p => `${p.first} ${p.last} (${p.office})`);
 
-describe("should filter people list correctly", () => {
+describe("basic helper functions", () => {
+  it("should figure that '123 London' means the 'London' tribe", () => {
+    const tester = testPeople.find(p => p.office === "123 London")!;
+    expect(inTribe("London")(tester)).toEqual(true);
+  });
+
+  it("should remove duplicates in a list", () => {
+    const list = ["a", "c", "b", "c", "c", "e", "e"];
+    expect(removeDuplicates(list)).toEqual(["a", "c", "b", "e"]);
+  });
+});
+
+describe("tribe prioritization", () => {
   it("should prioritize name list by a given tribe", () => {
     const peoplePrioritizedByTammerforce = prioritizeByTribe("Tammerforce")(
       testPeople
@@ -19,28 +34,43 @@ describe("should filter people list correctly", () => {
       "Matilda Braxton (Subcontractors)",
       "Hulda Helen (London)",
       "Riku Rouvila (London)",
+      "Rick Hacker (123 London)",
       "Taco Head (London)"
     ]);
   });
 });
 
-describe("should get similar names to a given name", () => {
-  it('should get names similar to "Rico"', () => {
-    const ricos = filterBySimilarName(testPeople, "Rico");
-    expect(printNamesAndOffices(ricos)).toEqual([
+describe("primitive name matching", () => {
+  const ricoMatchFunctions = getMatchFunctions("Rico");
+
+  it('should get names similar to "Rico" from all tribes', () => {
+    const peopleArray: People[] = [];
+    ricoMatchFunctions.forEach(matchFunction => {
+      const similarPeople = testPeople.filter(p => matchFunction(p.first));
+      peopleArray.push(similarPeople);
+    });
+    const ricoMatches = removeDuplicates(flatten(peopleArray));
+    expect(printNamesAndOffices(ricoMatches)).toEqual([
       "Ricardo Sanchez (Tammerforce)",
+      "Rick Hacker (123 London)",
       "Riku Rouvila (London)",
       "Taco Head (London)"
     ]);
   });
 
-  it("should get suspects for Rico prioritized by London office", () => {
-    const ricos = filterBySimilarName(testPeople, "Rico");
-    const ricosWithLondonPriority = prioritizeByTribe("London")(ricos);
-    expect(printNamesAndOffices(ricosWithLondonPriority)).toEqual([
+  it('should get names similar to "Rico" prioritized by London', () => {
+    const peopleArray: People[] = [];
+    ricoMatchFunctions.forEach(matchFunction => {
+      const similarPeople = testPeople.filter(p => matchFunction(p.first));
+      const londonPeople = prioritizeByTribe("London")(similarPeople);
+      peopleArray.push(londonPeople);
+    });
+    const ricoMatches = removeDuplicates(flatten(peopleArray));
+    expect(printNamesAndOffices(ricoMatches)).toEqual([
+      "Rick Hacker (123 London)",
+      "Ricardo Sanchez (Tammerforce)",
       "Riku Rouvila (London)",
-      "Taco Head (London)",
-      "Ricardo Sanchez (Tammerforce)"
+      "Taco Head (London)"
     ]);
   });
 });
@@ -75,6 +105,12 @@ const testPeople: People = [
     first: "Riku",
     last: "Rouvila",
     office: "London"
+  },
+  {
+    username: "rhac",
+    first: "Rick",
+    last: "Hacker",
+    office: "123 London"
   },
   {
     username: "rsan",

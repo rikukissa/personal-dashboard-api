@@ -1,5 +1,5 @@
-import { People, IPerson } from "./people";
 import { flatten } from "ramda";
+import { IPerson, People } from "./people";
 
 export interface IPeopleProps {
   people: People;
@@ -14,15 +14,18 @@ export const getLikelySuspects = (
   const { people, filter } = params;
   const filteredPeople = filter
     ? filter(people)
-    : prioritizeByTribe(office)(filterBySimilarName(people, name));
+    : getSuspects(office)(people, name);
   return filteredPeople;
 };
 
 export const inTribe = (tribe: string) => (p: IPerson) =>
   p.office.toLowerCase().includes(tribe.toLowerCase());
 
-export const prioritizeByTribe = (tribeName: string) => (people: People) =>
-  people.sort((a, b) => {
+export const prioritizeByTribe = (tribeName: string) => (people: People) => {
+  if (tribeName.length === 0) {
+    return people;
+  }
+  return people.sort((a, b) => {
     if (inTribe(tribeName)(b)) {
       if (inTribe(tribeName)(a)) {
         return 0;
@@ -31,48 +34,52 @@ export const prioritizeByTribe = (tribeName: string) => (people: People) =>
     }
     return -1;
   });
+};
 
 export const removeDuplicates = (items: any[]) =>
   items.filter((element, position, arr) => arr.indexOf(element) === position);
 
-export const filterBySimilarName = (people: People, name: string): People => {
-  const syllableMap = getDumbMatchingMap(name);
+export const getSuspects = (office: string) => (
+  people: People,
+  name: string
+): People => {
+  const matchFunctions = getMatchFunctions(name);
   const peopleArray: People[] = [];
 
-  syllableMap.forEach(matchFunction => {
-    const filteredPeople = people.filter(p => matchFunction(p.first));
-    peopleArray.push(filteredPeople);
+  matchFunctions.forEach(matchFunction => {
+    const similarlyNamedPeople = people.filter(p => matchFunction(p.first));
+    const tribePrioritizedPeople = prioritizeByTribe(office)(
+      similarlyNamedPeople
+    );
+    peopleArray.push(tribePrioritizedPeople);
   });
 
   return removeDuplicates(flatten(peopleArray));
 };
 
-type MatchFunction = (s: string) => boolean;
+export type MatchFunction = (s: string) => boolean;
 
-export const getDumbMatchingMap = (
-  name: string
-): Map<string, MatchFunction> => {
-  const map = new Map<string, MatchFunction>();
+export const getMatchFunctions = (name: string): MatchFunction[] => {
+  const matches = [];
   name = name.toLowerCase();
 
-  // Check for exact matches
-  map.set(name, (n: string) => n === name);
+  matches.push((n: string) => n.toLowerCase() === name);
 
-  // Check for beginning of name matches -- totally ignores names shorter than 3 atm
-  const startsWith = (numbersFromBeginning: number) => (n: string) =>
-    n.toLowerCase().startsWith(name.substr(0, numbersFromBeginning));
+  if (name.length >= 3) {
+    matches.push(matchWithBeginningOfName(3)(name));
+    matches.push(matchWithEndOfName(3)(name));
+  }
+  matches.push(matchWithBeginningOfName(2)(name));
+  matches.push(matchWithEndOfName(2)(name));
 
-  map.set(name.substr(0, 3), startsWith(3));
-  map.set(name.substr(0, 2), startsWith(2));
+  return matches;
+};
 
-  // Check for end of name matches -- same problems with name length here #TODO
-  const endsWith = (numbersFromEnd: number) => (n: string) =>
-    n.toLowerCase().endsWith(name.substr(name.length - numbersFromEnd));
+const matchWithBeginningOfName = (length: number) => (name: string) => {
+  return (n: string) => n.toLowerCase().startsWith(name.substr(0, length));
+};
 
-  map.set(name.substr(name.length - 3), endsWith(3));
-  map.set(name.substr(name.length - 2), endsWith(2));
-
-  return map;
-  // TODO what about repetition in name? Overwrites keys. ex: "riri"
-  //      .. maybe this shoudln't be a map
+const matchWithEndOfName = (length: number) => (name: string) => {
+  return (n: string) =>
+    n.toLowerCase().endsWith(name.substr(name.length - length));
 };
