@@ -9,7 +9,8 @@ import { transform } from "./services/faceapp";
 import { detect } from "./services/opencv";
 import { config } from "./config";
 import { getMissingHours } from "./services/missing-hours";
-import { getLikelySuspects, getPeople, getPerson } from "./services/people";
+import { getAllPeople, getPerson } from "./services/people";
+import { getLikelySuspects } from "./services/people-filter";
 
 const app = express();
 app.use(cors());
@@ -72,7 +73,7 @@ app.get("/people", async (req, res) => {
   if (!req.query.q) {
     return res.status(400).send('Missing "q" query param');
   }
-  const people = await getPeople();
+  const people = await getAllPeople();
   res.status(200).send(getLikelySuspects(req.query.q, { people }));
 });
 

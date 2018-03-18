@@ -4,9 +4,9 @@ import {
   getFullNames,
   getShortList,
   inLondon,
-  MAX_RETURNED_NAMES,
-  People
-} from "./people";
+  MAX_RETURNED_NAMES
+} from "./people-filter";
+import { People } from "./people";
 
 describe("should filter people list correctly", () => {
   it("should return no more than maximum amount of people specified when short list filter applied", () => {
@@ -53,78 +53,42 @@ const testPeople: People = [
     username: "race",
     first: "Rob",
     last: "Ace",
-    team: "1234 - London",
-    competence: "Developer (Primary)",
-    supervisor: "race",
-    supervisorName: "Rob Ace",
-    start: "2014-01-01",
-    active: "Active"
+    team: "1234 - London"
   },
   {
     username: "mbra",
     first: "Matilda",
     last: "Braxton",
-    team: "1235 - Subcontractors",
-    competence: "Sub contractors (Primary)",
-    supervisor: "race",
-    supervisorName: "Rob Ace",
-    start: "2016-07-01",
-    end: "2016-12-31",
-    active: "Passive"
+    team: "1235 - Subcontractors"
   },
   {
     username: "tmau",
     first: "Tiia",
     last: "Maunu",
-    team: "1236 - Tammerforce",
-    competence: "Designer (Primary)",
-    supervisor: "race",
-    supervisorName: "Rob Ace",
-    start: "2016-07-05",
-    active: "Active"
+    team: "1236 - Tammerforce"
   },
   {
     username: "hulh",
     first: "Hulda",
     last: "Helen",
-    team: "1234 - London",
-    competence: "Developer (Primary)",
-    supervisor: "race",
-    supervisorName: "Rob Ace",
-    start: "2014-01-01",
-    active: "Active"
+    team: "1234 - London"
   },
   {
     username: "rrou",
     first: "Riku",
     last: "Rouvila",
-    team: "1234 - London",
-    competence: "Developer (Primary)",
-    supervisor: "race",
-    supervisorName: "Rob Ace",
-    start: "2014-01-01",
-    active: "Active"
+    team: "1234 - London"
   },
   {
     username: "rsan",
     first: "Ricardo",
     last: "Sanchez",
-    team: "1236 - Tammerforce",
-    competence: "Developer (Primary)",
-    supervisor: "race",
-    supervisorName: "Rob Ace",
-    start: "2014-01-01",
-    active: "Active"
+    team: "1236 - Tammerforce"
   },
   {
     username: "thea",
     first: "Taco",
     last: "Head",
-    team: "1234 - London",
-    competence: "Designer (Primary)",
-    supervisor: "race",
-    supervisorName: "Rob Ace",
-    start: "2014-01-01",
-    active: "Active"
+    team: "1234 - London"
   }
 ];
