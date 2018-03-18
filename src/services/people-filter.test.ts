@@ -1,44 +1,47 @@
 import {
   filterBySimilarName,
-  filterByTribe,
-  getFullNames,
+  prioritizeByTribe
 } from "./people-filter";
 import { People } from "./people";
 
+const printNamesAndOffices = (people: People) =>
+  people.map(p => `${p.first} ${p.last} (${p.office})`);
+
 describe("should filter people list correctly", () => {
-
-  it("should get people whose tribe is London", () => {
-    const peopleInLondon = filterByTribe("LoNdOn")(testPeople);
-    expect(getFullNames(peopleInLondon)).toEqual([
-      "Rob Ace",
-      "Hulda Helen",
-      "Riku Rouvila",
-      "Taco Head"
-    ]);
-  });
-
-  it("should get people whose tribe is Tammerforce", () => {
-    const peopleInTammerforce = filterByTribe("Tammerforce")(testPeople);
-    expect(getFullNames(peopleInTammerforce)).toEqual([
-      "Tiia Maunu",
-      "Ricardo Sanchez"
+  it("should prioritize name list by a given tribe", () => {
+    const peoplePrioritizedByTammerforce = prioritizeByTribe("Tammerforce")(
+      testPeople
+    );
+    expect(printNamesAndOffices(peoplePrioritizedByTammerforce)).toEqual([
+      "Tiia Maunu (Tammerforce)",
+      "Ricardo Sanchez (Tammerforce)",
+      "Rob Ace (London)",
+      "Matilda Braxton (Subcontractors)",
+      "Hulda Helen (London)",
+      "Riku Rouvila (London)",
+      "Taco Head (London)"
     ]);
   });
 });
 
-describe("should get matching names in a dumb, but expected way", () => {
-  it("should get a match map for Rico", () => {
-    const namesSimilarToRico = filterBySimilarName(testPeople, "Rico");
-    expect(getFullNames(namesSimilarToRico)).toEqual([
-      "Ricardo Sanchez",
-      "Riku Rouvila",
-      "Taco Head"
+describe("should get similar names to a given name", () => {
+  it('should get names similar to "Rico"', () => {
+    const ricos = filterBySimilarName(testPeople, "Rico");
+    expect(printNamesAndOffices(ricos)).toEqual([
+      "Ricardo Sanchez (Tammerforce)",
+      "Riku Rouvila (London)",
+      "Taco Head (London)"
     ]);
   });
 
-  it("should get suspects for Rico from London only", () => {
-    const ricosInLondon = filterBySimilarName(filterByTribe("London")(testPeople), "Rico");
-    expect(getFullNames(ricosInLondon)).toEqual(["Riku Rouvila", "Taco Head"]);
+  it("should get suspects for Rico prioritized by London office", () => {
+    const ricos = filterBySimilarName(testPeople, "Rico");
+    const ricosWithLondonPriority = prioritizeByTribe("London")(ricos);
+    expect(printNamesAndOffices(ricosWithLondonPriority)).toEqual([
+      "Riku Rouvila (London)",
+      "Taco Head (London)",
+      "Ricardo Sanchez (Tammerforce)"
+    ]);
   });
 });
 

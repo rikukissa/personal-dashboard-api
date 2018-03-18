@@ -14,15 +14,23 @@ export const getLikelySuspects = (
   const { people, filter } = params;
   const filteredPeople = filter
     ? filter(people)
-    : filterBySimilarName(filterByTribe(office)(people), name);
+    : prioritizeByTribe(office)(filterBySimilarName(people, name));
   return filteredPeople;
 };
 
-export const getFullNames = (people: People): string[] =>
-  people.map(p => `${p.first} ${p.last}`);
+export const inTribe = (tribe: string) => (p: IPerson) =>
+  p.office.toLowerCase().includes(tribe.toLowerCase());
 
-export const filterByTribe = (tribeName: string) => (people: People) =>
-  people.filter(p => p.office.toLowerCase().includes(tribeName.toLowerCase()));
+export const prioritizeByTribe = (tribeName: string) => (people: People) =>
+  people.sort((a, b) => {
+    if (inTribe(tribeName)(b)) {
+      if (inTribe(tribeName)(a)) {
+        return 0;
+      }
+      return 1;
+    }
+    return -1;
+  });
 
 export const removeDuplicates = (items: any[]) =>
   items.filter((element, position, arr) => arr.indexOf(element) === position);
@@ -39,9 +47,11 @@ export const filterBySimilarName = (people: People, name: string): People => {
   return removeDuplicates(flatten(peopleArray));
 };
 
-type MatchFunction = (s: string) => boolean
+type MatchFunction = (s: string) => boolean;
 
-export const getDumbMatchingMap = (name: string): Map<string, MatchFunction> => {
+export const getDumbMatchingMap = (
+  name: string
+): Map<string, MatchFunction> => {
   const map = new Map<string, MatchFunction>();
   name = name.toLowerCase();
 
