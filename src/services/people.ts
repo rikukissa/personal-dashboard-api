@@ -4,7 +4,7 @@ import { flatten } from "ramda";
 
 export const MAX_RETURNED_NAMES = 6;
 
-export interface Person {
+export interface IPerson {
   username: string;
   first: string;
   last: string;
@@ -17,12 +17,12 @@ export interface Person {
   active: string;
 }
 
-export type People = Person[];
+export type People = IPerson[];
 
-export type PeopleProps = {
+export interface IPeopleProps {
   people: People;
   filter?(people: People): People;
-};
+}
 
 export async function getPeople(): Promise<People> {
   // TODO use better endpoint for fetching this data
@@ -61,7 +61,7 @@ export async function getPerson(username: string) {
 
 export const getLikelySuspects = (
   name: string,
-  params: PeopleProps
+  params: IPeopleProps
 ): People => {
   const { people, filter } = params;
   const filteredPeople = filter
@@ -83,7 +83,7 @@ export const filterByTribe = (tribeName: string) => (people: People) =>
   people.filter(p => p.team.includes(tribeName));
 
 export const removeDuplicates = (items: any[]) =>
-  items.filter((element, position, arr) => arr.indexOf(element) == position);
+  items.filter((element, position, arr) => arr.indexOf(element) === position);
 
 export const filterBySimilarName = (people: People, name: string): People => {
   const syllableMap = getDumbMatchingMap(name);
@@ -97,8 +97,12 @@ export const filterBySimilarName = (people: People, name: string): People => {
   return removeDuplicates(flatten(peopleArray));
 };
 
-export const getDumbMatchingMap = (name: string): Map<string, Function> => {
-  const map = new Map<string, Function>();
+type MatchFunction = (s: string) => boolean;
+
+export const getDumbMatchingMap = (
+  name: string
+): Map<string, MatchFunction> => {
+  const map = new Map<string, MatchFunction>();
   name = name.toLowerCase();
 
   // Check for exact matches

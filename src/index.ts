@@ -93,6 +93,7 @@ const server = http.createServer(app);
 const wss = new WS.Server({ server });
 
 wss.on("connection", function connection(ws) {
+  /* tslint:disable:no-empty */
   ws.on("error", () => {});
   ws.on("message", function incoming(message: Buffer) {
     const png = new PNG({

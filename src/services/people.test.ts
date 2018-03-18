@@ -6,58 +6,47 @@ import {
   inLondon,
   MAX_RETURNED_NAMES,
   People
-  } from './people';
+} from "./people";
 
-describe('should filter people list correctly', () => {
-  it('should return no more than maximum amount of people specified when short list filter applied', () => {
+describe("should filter people list correctly", () => {
+  it("should return no more than maximum amount of people specified when short list filter applied", () => {
     expect(getShortList(testPeople).length).toEqual(MAX_RETURNED_NAMES);
-  })
+  });
 
-  it('should get people whose tribe is London', () => {
-    const peopleInLondon = filterByTribe('London')(testPeople);
-    expect(getFullNames(peopleInLondon)).toEqual(
-      [
-        'Rob Ace',
-        'Hulda Helen',
-        'Riku Rouvila',
-        'Taco Head'
-      ]
-    )
-  })
+  it("should get people whose tribe is London", () => {
+    const peopleInLondon = filterByTribe("London")(testPeople);
+    expect(getFullNames(peopleInLondon)).toEqual([
+      "Rob Ace",
+      "Hulda Helen",
+      "Riku Rouvila",
+      "Taco Head"
+    ]);
+  });
 
-  it('should get people whose tribe is Tammerforce', () => {
-    const peopleInTammerforce = filterByTribe('Tammerforce')(testPeople);
-    expect(getFullNames(peopleInTammerforce)).toEqual(
-      [
-        'Tiia Maunu',
-        'Ricardo Sanchez'
-      ]
-    )
-  })
-})
+  it("should get people whose tribe is Tammerforce", () => {
+    const peopleInTammerforce = filterByTribe("Tammerforce")(testPeople);
+    expect(getFullNames(peopleInTammerforce)).toEqual([
+      "Tiia Maunu",
+      "Ricardo Sanchez"
+    ]);
+  });
+});
 
-describe('should get matching names in a dumb, but expected way', () => {
-  it('should get a match map for Rico', () => {
-    const namesSimilarToRico = filterBySimilarName(testPeople, 'Rico');
-    expect(getFullNames(namesSimilarToRico)).toEqual(
-      [ 
-        'Ricardo Sanchez',
-        'Riku Rouvila',
-        'Taco Head' 
-      ]
-    );
-  })
+describe("should get matching names in a dumb, but expected way", () => {
+  it("should get a match map for Rico", () => {
+    const namesSimilarToRico = filterBySimilarName(testPeople, "Rico");
+    expect(getFullNames(namesSimilarToRico)).toEqual([
+      "Ricardo Sanchez",
+      "Riku Rouvila",
+      "Taco Head"
+    ]);
+  });
 
-  it('should get suspects for Rico from London only', () => {
-    const ricosInLondon = filterBySimilarName(inLondon(testPeople), 'Rico')
-    expect(getFullNames(ricosInLondon)).toEqual(
-      [
-        'Riku Rouvila',
-        'Taco Head',
-      ]
-    )
-  })
-})
+  it("should get suspects for Rico from London only", () => {
+    const ricosInLondon = filterBySimilarName(inLondon(testPeople), "Rico");
+    expect(getFullNames(ricosInLondon)).toEqual(["Riku Rouvila", "Taco Head"]);
+  });
+});
 
 const testPeople: People = [
   {
@@ -138,4 +127,4 @@ const testPeople: People = [
     start: "2014-01-01",
     active: "Active"
   }
-]
+];
