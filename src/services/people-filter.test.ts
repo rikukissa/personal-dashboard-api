@@ -2,15 +2,10 @@ import {
   filterBySimilarName,
   filterByTribe,
   getFullNames,
-  getShortList,
-  MAX_RETURNED_NAMES
 } from "./people-filter";
 import { People } from "./people";
 
 describe("should filter people list correctly", () => {
-  it("should return no more than maximum amount of people specified when short list filter applied", () => {
-    expect(getShortList(testPeople).length).toEqual(MAX_RETURNED_NAMES);
-  });
 
   it("should get people whose tribe is London", () => {
     const peopleInLondon = filterByTribe("LoNdOn")(testPeople);

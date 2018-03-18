@@ -1,8 +1,6 @@
 import { People, IPerson } from "./people";
 import { flatten } from "ramda";
 
-export const MAX_RETURNED_NAMES = 6;
-
 export interface IPeopleProps {
   people: People;
   filter?(people: People): People;
@@ -22,9 +20,6 @@ export const getLikelySuspects = (
 
 export const getFullNames = (people: People): string[] =>
   people.map(p => `${p.first} ${p.last}`);
-
-export const getShortList = (people: People): People =>
-  people.slice(0, MAX_RETURNED_NAMES);
 
 export const filterByTribe = (tribeName: string) => (people: People) =>
   people.filter(p => p.office.toLowerCase().includes(tribeName.toLowerCase()));
