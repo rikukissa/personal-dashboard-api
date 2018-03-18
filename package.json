@@ -48,7 +48,6 @@
       "ts",
       "js"
     ],
-    "mapCoverage": true,
     "testEnvironment": "node"
   }
 }
