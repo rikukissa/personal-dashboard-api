@@ -1,5 +1,6 @@
 import { flatten } from "ramda";
 import {
+  getLikelySuspects,
   getMatchFunctions,
   inTribe,
   prioritizeByTribe,
@@ -71,6 +72,16 @@ describe("primitive name matching", () => {
       "Ricardo Sanchez (Tammerforce)",
       "Riku Rouvila (London)",
       "Taco Head (London)"
+    ]);
+  });
+
+  it('should get the likely suspects for "Hilda"', () => {
+    const likelySuspects = getLikelySuspects("Subcontractors")(testPeople)(
+      "Hilda"
+    );
+    expect(printNamesAndOffices(likelySuspects)).toEqual([
+      "Matilda Braxton (Subcontractors)",
+      "Hulda Helen (London)"
     ]);
   });
 });

@@ -6,16 +6,21 @@ export interface IPeopleProps {
   filter?(people: People): People;
 }
 
-export const getLikelySuspects = (
-  name: string,
-  office: string = "London",
-  params: IPeopleProps
+export const getLikelySuspects = (office: string) => (people: People) => (
+  name: string
 ): IPerson[] => {
-  const { people, filter } = params;
-  const filteredPeople = filter
-    ? filter(people)
-    : getSuspects(office)(people, name);
-  return filteredPeople;
+  const matchFunctions = getMatchFunctions(name);
+  const peopleArray: People[] = [];
+
+  matchFunctions.forEach(matchFunction => {
+    const similarlyNamedPeople = people.filter(p => matchFunction(p.first));
+    const tribePrioritizedPeople = prioritizeByTribe(office)(
+      similarlyNamedPeople
+    );
+    peopleArray.push(tribePrioritizedPeople);
+  });
+
+  return removeDuplicates(flatten(peopleArray));
 };
 
 export const inTribe = (tribe: string) => (p: IPerson) =>
@@ -38,24 +43,6 @@ export const prioritizeByTribe = (tribeName: string) => (people: People) => {
 
 export const removeDuplicates = (items: any[]) =>
   items.filter((element, position, arr) => arr.indexOf(element) === position);
-
-export const getSuspects = (office: string) => (
-  people: People,
-  name: string
-): People => {
-  const matchFunctions = getMatchFunctions(name);
-  const peopleArray: People[] = [];
-
-  matchFunctions.forEach(matchFunction => {
-    const similarlyNamedPeople = people.filter(p => matchFunction(p.first));
-    const tribePrioritizedPeople = prioritizeByTribe(office)(
-      similarlyNamedPeople
-    );
-    peopleArray.push(tribePrioritizedPeople);
-  });
-
-  return removeDuplicates(flatten(peopleArray));
-};
 
 export type MatchFunction = (s: string) => boolean;
 

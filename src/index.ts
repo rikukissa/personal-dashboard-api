@@ -76,7 +76,7 @@ app.get("/people", async (req, res) => {
   const people = await getAllPeople();
   res
     .status(200)
-    .send(getLikelySuspects(req.query.name, req.query.office, { people }));
+    .send(getLikelySuspects(req.query.office)(people)(req.query.name));
 });
 
 app.get("/people/:username", async (req, res) => {
