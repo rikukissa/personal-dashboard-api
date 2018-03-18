@@ -24,6 +24,20 @@ describe("basic helper functions", () => {
 });
 
 describe("tribe prioritization", () => {
+  it("should return list as-is if no tribe specified", () => {
+    const people = prioritizeByTribe("")(testPeople);
+    expect(printNamesAndOffices(people)).toEqual([
+      "Rob Ace (London)",
+      "Matilda Braxton (Subcontractors)",
+      "Tiia Maunu (Tammerforce)",
+      "Hulda Helen (London)",
+      "Riku Rouvila (London)",
+      "Rick Hacker (123 London)",
+      "Ricardo Sanchez (Tammerforce)",
+      "Taco Head (London)"
+    ]);
+  });
+
   it("should prioritize name list by a given tribe", () => {
     const peoplePrioritizedByTammerforce = prioritizeByTribe("Tammerforce")(
       testPeople

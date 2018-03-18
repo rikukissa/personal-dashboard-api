@@ -27,7 +27,7 @@ export const inTribe = (tribe: string) => (p: IPerson) =>
   p.office.toLowerCase().includes(tribe.toLowerCase());
 
 export const prioritizeByTribe = (tribeName: string) => (people: People) => {
-  if (tribeName.length === 0) {
+  if (!tribeName || tribeName.length === 0) {
     return people;
   }
   return people.sort((a, b) => {
