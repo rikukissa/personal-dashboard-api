@@ -5,7 +5,7 @@ export interface IPerson {
   username: string;
   first: string;
   last: string;
-  team: string;
+  office: string;
 }
 
 export type People = IPerson[];
@@ -17,7 +17,6 @@ export async function getAllPeople(): Promise<People> {
       password: config.HOURS_CSV_PASSWORD
     }
   });
-  console.log(res.data.data)
   return Object.keys(res.data.data).map(username => {
     const data = res.data.data[username][0];
     const [firstname, ...lastname] = data.name.split(" ");
@@ -25,7 +24,7 @@ export async function getAllPeople(): Promise<People> {
       username,
       first: firstname,
       last: lastname.join(" "),
-      team: data.tribe
+      office: data.tribe
     };
   });
 }

@@ -10,17 +10,15 @@ export interface IPeopleProps {
 
 export const getLikelySuspects = (
   name: string,
+  office: string = "London",
   params: IPeopleProps
 ): IPerson[] => {
   const { people, filter } = params;
   const filteredPeople = filter
     ? filter(people)
-    : filterBySimilarName(inLondon(people), name);
+    : filterBySimilarName(filterByTribe(office)(people), name);
   return filteredPeople;
 };
-
-export const inLondon = (people: People): People =>
-  filterByTribe("London")(people);
 
 export const getFullNames = (people: People): string[] =>
   people.map(p => `${p.first} ${p.last}`);
@@ -29,7 +27,7 @@ export const getShortList = (people: People): People =>
   people.slice(0, MAX_RETURNED_NAMES);
 
 export const filterByTribe = (tribeName: string) => (people: People) =>
-  people.filter(p => p.team.includes(tribeName));
+  people.filter(p => p.office.toLowerCase().includes(tribeName.toLowerCase()));
 
 export const removeDuplicates = (items: any[]) =>
   items.filter((element, position, arr) => arr.indexOf(element) === position);

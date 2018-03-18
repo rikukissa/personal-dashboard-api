@@ -70,11 +70,13 @@ app.get("/missing-hours/:userId", async (req, res) => {
 });
 
 app.get("/people", async (req, res) => {
-  if (!req.query.q) {
-    return res.status(400).send('Missing "q" query param');
+  if (!req.query.name) {
+    return res.status(400).send('Missing "name" query param');
   }
   const people = await getAllPeople();
-  res.status(200).send(getLikelySuspects(req.query.q, { people }));
+  res
+    .status(200)
+    .send(getLikelySuspects(req.query.name, req.query.office, { people }));
 });
 
 app.get("/people/:username", async (req, res) => {
