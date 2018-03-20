@@ -9,6 +9,8 @@ import { transform } from "./services/faceapp";
 import { detect } from "./services/opencv";
 import { config } from "./config";
 import { getMissingHours } from "./services/missing-hours";
+import { getAllPeople, getPerson } from "./services/people";
+import { getLikelySuspects } from "./services/people-filter";
 
 const app = express();
 app.use(cors());
@@ -32,7 +34,8 @@ app.post("/faces", bodyParser.single("file"), async (req, res) => {
 app.post("/recognize", bodyParser.single("file"), async (req, res) => {
   try {
     const result = await recognize(req.file);
-    res.status(200).send(result);
+    const people = await Promise.all(result.map(getPerson));
+    res.status(200).send(people);
   } catch (err) {
     if (err.message.indexOf("There are no faces in the image.")) {
       return res.status(400).send(err.message);
@@ -66,6 +69,25 @@ app.get("/missing-hours/:userId", async (req, res) => {
   }
 });
 
+app.get("/people", async (req, res) => {
+  if (!req.query.name) {
+    return res.status(400).send('Missing "name" query param');
+  }
+  const people = await getAllPeople();
+  res
+    .status(200)
+    .send(getLikelySuspects(req.query.office)(people)(req.query.name));
+});
+
+app.get("/people/:username", async (req, res) => {
+  const person = await getPerson(req.params.username);
+  if (!person) {
+    res.status(404).send("User not found");
+    return;
+  }
+  res.status(200).send(person);
+});
+
 /*
  * Websockets
  */
@@ -74,6 +96,7 @@ const server = http.createServer(app);
 const wss = new WS.Server({ server });
 
 wss.on("connection", function connection(ws) {
+  /* tslint:disable:no-empty */
   ws.on("error", () => {});
   ws.on("message", function incoming(message: Buffer) {
     const png = new PNG({
