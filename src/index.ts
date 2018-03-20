@@ -75,6 +75,9 @@ app.get("/people", async (req, res) => {
   if (!req.query.name) {
     return res.status(400).send('Missing "name" query param');
   }
+  if (!req.query.office) {
+    return res.status(400).send('Missing "office" query param');
+  }
   const people = await getAllPeople();
   res
     .status(200)
