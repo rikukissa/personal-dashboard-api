@@ -19,12 +19,17 @@ export async function getAllPeople(): Promise<People> {
   });
   return Object.keys(res.data.data).map(username => {
     const data = res.data.data[username][0];
+    const missingHours = res.data.data[username][1].reduce(
+      (memo: number, { capacity }: { capacity: number }) => memo + capacity,
+      0
+    );
     const [firstname, ...lastname] = data.name.split(" ");
     return {
       username,
       first: firstname,
       last: lastname.join(" "),
-      office: data.tribe
+      office: data.tribe,
+      missingHours
     };
   });
 }
